@@ -9,7 +9,7 @@
     var rondas = partidos.GroupBy(p => p.Ronda).OrderBy(g => g.Key).ToList();
     var rondaActual = rondas.Any() ? rondas.Max(g => g.Key) : 0;
     var todosJugados = rondas.Any() && rondas.Last().All(p => p.Jugado);
-    var hayGanador = todosJugados && rondaActual == 3; // Ronda 3 es la Final
+    var hayGanador = todosJugados && rondaActual == 3;
 
     string NombreRonda(int r) => r switch
     {
@@ -20,16 +20,122 @@
     };
 }
 
-<div class="container mt-4">
+<style>
+    body {
+        background: #f4f6f9;
+    }
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>@Model.Nombre — Edición @Model.Edicion</h2>
+    .page {
+        max-width: 1100px;
+        margin: 30px auto;
+    }
+
+    .header {
+        background: white;
+        padding: 18px 20px;
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+    }
+
+        .header h3 {
+            margin: 0;
+            font-size: 1.25rem;
+        }
+
+    .section-title {
+        background: white;
+        padding: 14px 18px;
+        border-radius: 10px 10px 0 0;
+        border: 1px solid #e5e7eb;
+        border-bottom: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 18px;
+    }
+
+        .section-title h4 {
+            margin: 0;
+            font-size: 1.05rem;
+        }
+
+    .table-box {
+        background: white;
+        border-radius: 0 0 10px 10px;
+        overflow: hidden;
+        border: 1px solid #e5e7eb;
+        margin-bottom: 18px;
+    }
+
+        .table-box.no-header {
+            border-radius: 10px;
+            margin-top: 18px;
+        }
+
+    table {
+        margin: 0;
+    }
+
+    thead {
+        background: #111827;
+        color: white;
+    }
+
+    tbody tr:hover {
+        background: #f3f4f6;
+    }
+
+    .btn-sm {
+        border-radius: 6px;
+        padding: 5px 10px;
+        font-size: 0.85rem;
+    }
+
+    .btn-open {
+        background: #198754;
+        color: white;
+    }
+
+    .btn-edit {
+        background: #fbbf24;
+        color: #111827;
+    }
+
+    .btn-danger-soft {
+        background: #ef4444;
+        color: white;
+    }
+
+    .champion-banner {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        color: #111827;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 18px;
+        border: 1px solid #e5e7eb;
+    }
+</style>
+
+<div class="page">
+
+    <div class="header">
+        <div>
+            <h3>@Model.Nombre — Edición @Model.Edicion</h3>
+            <small class="text-muted">Detalle del torneo</small>
+        </div>
         <a href="/Torneo/Index" class="btn btn-secondary">Volver</a>
     </div>
 
     @if (TempData["Error"] != null)
     {
-        <div class="alert alert-danger">@TempData["Error"]</div>
+        <div class="alert alert-light border">@TempData["Error"]</div>
     }
 
     @if (hayGanador)
@@ -40,13 +146,13 @@
             : finalPartido.EquipoVisitanteId);
         var ganadorNombre = equipoDict.ContainsKey(ganadorId) ? equipoDict[ganadorId] : "Desconocido";
 
-        <div class="alert alert-success text-center fs-4">
-            🏆 ¡Campeón: <strong>@ganadorNombre</strong>!
+        <div class="champion-banner">
+            🏆 ¡Campeón: @ganadorNombre!
         </div>
     }
 
     @* SECCIÓN EQUIPOS *@
-    <div class="d-flex justify-content-between align-items-center mb-2">
+    <div class="section-title">
         <h4>Equipos (@equipos.Count/8)</h4>
         @if (equipos.Count < 8 && rondaActual == 0)
         {
@@ -56,46 +162,52 @@
 
     @if (!equipos.Any())
     {
-        <p class="text-muted">No hay equipos inscritos.</p>
+        <div class="table-box">
+            <div class="p-3 text-muted">No hay equipos inscritos.</div>
+        </div>
     }
     else
     {
-        <table class="table table-bordered table-hover mb-4">
-            <thead class="table-dark">
-                <tr>
-                    <th>Nombre</th>
-                    <th>Ciudad</th>
-                    @if (rondaActual == 0)
-                    {
-                        <th>Acciones</th>
-                    }
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var equipo in equipos)
-                {
+        <div class="table-box">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
                     <tr>
-                        <td>@equipo.Nombre</td>
-                        <td>@equipo.Ciudad</td>
+                        <th>Nombre</th>
+                        <th>Ciudad</th>
                         @if (rondaActual == 0)
                         {
-                            <td>
-                                <a href="/Equipo/Editar/@equipo.Id" class="btn btn-sm btn-warning">Editar</a>
-                                <form action="/Equipo/Eliminar" method="post" class="d-inline">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="id" value="@equipo.Id" />
-                                    <input type="hidden" name="torneoId" value="@Model.Id" />
-                                    <button type="submit" class="btn btn-sm btn-danger"
-                                            onclick="return confirm('¿Eliminar este equipo?')">
-                                        Eliminar
-                                    </button>
-                                </form>
-                            </td>
+                            <th style="width:220px;">Acciones</th>
                         }
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var equipo in equipos)
+                    {
+                        <tr>
+                            <td><strong>@equipo.Nombre</strong></td>
+                            <td>@equipo.Ciudad</td>
+                            @if (rondaActual == 0)
+                            {
+                                <td>
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <a href="/Equipo/Editar/@equipo.Id" class="btn btn-sm btn-edit">Editar</a>
+                                        <form action="/Equipo/Eliminar" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@equipo.Id" />
+                                            <input type="hidden" name="torneoId" value="@Model.Id" />
+                                            <button type="submit" class="btn btn-sm btn-danger-soft"
+                                                    onclick="return confirm('¿Eliminar este equipo?')">
+                                                Eliminar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     }
 
     @* BOTÓN GENERAR CUARTOS *@
@@ -116,77 +228,80 @@
     {
         @foreach (var ronda in rondas)
         {
-            <h4 class="mt-4">@NombreRonda(ronda.Key)</h4>
-            <table class="table table-bordered table-hover mb-3">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Local</th>
-                        <th>Visitante</th>
-                        <th>Marcador</th>
-                        <th>Estado</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var partido in ronda)
-                    {
-                        var nombreLocal = equipoDict.ContainsKey(partido.EquipoLocalId)
-                            ? equipoDict[partido.EquipoLocalId] : partido.EquipoLocalId.ToString();
-                        var nombreVisitante = equipoDict.ContainsKey(partido.EquipoVisitanteId)
-                            ? equipoDict[partido.EquipoVisitanteId] : partido.EquipoVisitanteId.ToString();
+            <div class="section-title">
+                <h4>@NombreRonda(ronda.Key)</h4>
+            </div>
+            <div class="table-box">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
                         <tr>
-                            <td>@nombreLocal</td>
-                            <td>@nombreVisitante</td>
-                            <td>
-                                @if (partido.Jugado)
-                                {
-                                    <strong>@partido.GolesLocal - @partido.GolesVisitante</strong>
-                                    @if (partido.GolesLocal == partido.GolesVisitante && partido.GanadorId != null)
-                                    {
-                                        <small class="text-muted d-block">
-                                            (Penales: Ganó @(equipoDict.ContainsKey(partido.GanadorId.Value) ? equipoDict[partido.GanadorId.Value] : ""))
-                                        </small>
-                                    }
-                                }
-                                else
-                                {
-                                    <form action="/Partido/RegistrarResultado" method="post"
-                                          class="d-flex align-items-center gap-2">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="id" value="@partido.Id" />
-                                        <input type="hidden" name="torneoId" value="@Model.Id" />
-                                        <input type="number" name="golesLocal" value="0"
-                                               min="0" max="99"
-                                               class="form-control form-control-sm"
-                                               style="width:60px" />
-                                        <span>-</span>
-                                        <input type="number" name="golesVisitante" value="0"
-                                               min="0" max="99"
-                                               class="form-control form-control-sm"
-                                               style="width:60px" />
-                                        <button type="submit" class="btn btn-sm btn-success">✓</button>
-                                    </form>
-                                }
-                            </td>
-                            <td>
-                                @if (partido.Jugado)
-                                {
-                                    <span class="badge bg-success">Jugado</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-warning text-dark">Pendiente</span>
-                                }
-                            </td>
+                            <th>Local</th>
+                            <th>Visitante</th>
+                            <th>Marcador</th>
+                            <th>Estado</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var partido in ronda)
+                        {
+                            var nombreLocal = equipoDict.ContainsKey(partido.EquipoLocalId)
+                                ? equipoDict[partido.EquipoLocalId] : partido.EquipoLocalId.ToString();
+                            var nombreVisitante = equipoDict.ContainsKey(partido.EquipoVisitanteId)
+                                ? equipoDict[partido.EquipoVisitanteId] : partido.EquipoVisitanteId.ToString();
+                            <tr>
+                                <td><strong>@nombreLocal</strong></td>
+                                <td><strong>@nombreVisitante</strong></td>
+                                <td>
+                                    @if (partido.Jugado)
+                                    {
+                                        <strong>@partido.GolesLocal - @partido.GolesVisitante</strong>
+                                        @if (partido.GolesLocal == partido.GolesVisitante && partido.GanadorId != null)
+                                        {
+                                            <small class="text-muted d-block">
+                                                (Penales: Ganó @(equipoDict.ContainsKey(partido.GanadorId.Value) ? equipoDict[partido.GanadorId.Value] : ""))
+                                            </small>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <form action="/Partido/RegistrarResultado" method="post"
+                                              class="d-flex align-items-center gap-2">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@partido.Id" />
+                                            <input type="hidden" name="torneoId" value="@Model.Id" />
+                                            <input type="number" name="golesLocal" value="0"
+                                                   min="0" max="99"
+                                                   class="form-control form-control-sm"
+                                                   style="width:60px" />
+                                            <span>-</span>
+                                            <input type="number" name="golesVisitante" value="0"
+                                                   min="0" max="99"
+                                                   class="form-control form-control-sm"
+                                                   style="width:60px" />
+                                            <button type="submit" class="btn btn-sm btn-open">✓</button>
+                                        </form>
+                                    }
+                                </td>
+                                <td>
+                                    @if (partido.Jugado)
+                                    {
+                                        <span class="badge bg-success">Jugado</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">Pendiente</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         }
 
-        @* BOTÓN DINÁMICO PARA GENERAR LA SIGUIENTE RONDA (SEMIFINALES O FINAL) *@
         @if (todosJugados && !hayGanador)
         {
-            <form action="/Torneo/GenerarSiguienteRonda" method="post" class="mt-4 mb-4">
+            <form action="/Torneo/GenerarSiguienteRonda" method="post" class="mb-4">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="id" value="@Model.Id" />
                 <input type="hidden" name="rondaActual" value="@rondaActual" />

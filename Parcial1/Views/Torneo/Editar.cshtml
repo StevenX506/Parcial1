@@ -4,27 +4,86 @@
     ViewData["Title"] = "Editar torneo";
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Editar torneo</h2>
-        <a href="/Torneo/Index" class="btn btn-secondary">Volver</a>
+<style>
+    body {
+        background: #f4f6f9;
+    }
+
+    .page {
+        max-width: 700px;
+        margin: 30px auto;
+    }
+
+    .card-box {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 20px;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+        .header h3 {
+            margin: 0;
+            font-size: 1.25rem;
+        }
+
+    .form-control {
+        border-radius: 8px;
+    }
+
+    .btn-primary {
+        border-radius: 8px;
+    }
+
+    .btn-secondary {
+        border-radius: 8px;
+    }
+</style>
+
+<div class="page">
+
+    <div class="card-box">
+
+        <div class="header">
+            <h3>Editar torneo</h3>
+            <a href="/Torneo/Index" class="btn btn-secondary btn-sm">
+                Volver
+            </a>
+        </div>
+
+        <form action="/Torneo/Editar" method="post">
+
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" name="Id" value="@Model.Id" />
+
+            <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                <input name="Nombre"
+                       value="@Model.Nombre"
+                       class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Edición</label>
+                <input name="Edicion"
+                       value="@Model.Edicion"
+                       class="form-control"
+                       type="number" />
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+                Guardar cambios
+            </button>
+
+        </form>
+
     </div>
 
-    <form action="/Torneo/Editar" method="post">
-        @Html.AntiForgeryToken()
-
-        <input type="hidden" name="Id" value="@Model.Id" />
-
-        <div class="mb-3">
-            <label class="form-label">Nombre</label>
-            <input name="Nombre" value="@Model.Nombre" class="form-control" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Edición</label>
-            <input name="Edicion" value="@Model.Edicion" class="form-control" type="number" />
-        </div>
-
-        <button type="submit" class="btn btn-primary">Guardar cambios</button>
-    </form>
 </div>

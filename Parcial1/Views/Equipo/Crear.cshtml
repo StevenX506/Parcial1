@@ -4,26 +4,90 @@
     ViewData["Title"] = "Agregar equipo";
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Agregar equipo</h2>
-        <a href="/Torneo/Detalle/@Model.TorneoId" class="btn btn-secondary">Volver</a>
+<style>
+    body {
+        background: #f4f6f9;
+    }
+
+    .page {
+        max-width: 700px;
+        margin: 30px auto;
+    }
+
+    .card-box {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 20px;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .form-control {
+        border-radius: 8px;
+    }
+
+    .btn-primary {
+        border-radius: 8px;
+    }
+
+    .btn-secondary {
+        border-radius: 8px;
+    }
+
+    .btn-outline-secondary {
+        border-radius: 8px;
+    }
+</style>
+
+<div class="page">
+
+    <div class="card-box">
+
+        <div class="header">
+            <div>
+                <h3>Agregar equipo</h3>
+                <p class="text-muted mb-0">Registro de nuevo equipo en el torneo</p>
+            </div>
+
+            <a href="/Torneo/Detalle/@Model.TorneoId"
+               class="btn btn-secondary btn-sm">
+                Volver
+            </a>
+        </div>
+
+        <form action="/Equipo/Crear" method="post">
+
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="TorneoId" value="@Model.TorneoId" />
+
+            <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                <input name="Nombre"
+                       class="form-control"
+                       placeholder="Ej: FC Don Cangrejo"
+                       required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Ciudad</label>
+                <input name="Ciudad"
+                       class="form-control"
+                       placeholder="Ej: Fondo de Bikini"
+                       required />
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+                Guardar equipo
+            </button>
+
+        </form>
+
     </div>
 
-    <form action="/Equipo/Crear" method="post">
-        @Html.AntiForgeryToken()
-        <input type="hidden" name="TorneoId" value="@Model.TorneoId" />
-
-        <div class="mb-3">
-            <label class="form-label">Nombre</label>
-            <input name="Nombre" class="form-control" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Ciudad</label>
-            <input name="Ciudad" class="form-control" />
-        </div>
-
-        <button type="submit" class="btn btn-primary">Agregar</button>
-    </form>
 </div>

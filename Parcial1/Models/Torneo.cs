@@ -14,8 +14,7 @@ namespace Parcial1.Models
         public string Nombre { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "La edición es obligatoria.")]
-        [Range(1, 100, ErrorMessage = "La edición debe estar entre 1 y 100.")]
-        [JsonPropertyName("edicion")]
+        [Range(1, 9999, ErrorMessage = "La edición debe ser un número válido.")]
         public int Edicion { get; set; }
 
         [JsonPropertyName("activo")]

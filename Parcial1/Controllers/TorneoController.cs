@@ -51,11 +51,19 @@ namespace Parcial1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Crear(Torneo torneo)
         {
+            Console.WriteLine($"NOMBRE: {torneo.Nombre}, EDICION: {torneo.Edicion}");
+            Console.WriteLine($"MODELSTATE VALID: {ModelState.IsValid}");
+
             if (!ModelState.IsValid)
+            {
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine($"ERROR: {error.ErrorMessage}");
+                }
                 return View(torneo);
+            }
 
             await _torneoService.CrearAsync(torneo);
-
             return RedirectToAction(nameof(Index));
         }
 
@@ -68,7 +76,6 @@ namespace Parcial1.Controllers
 
             return View(torneo);
         }
-       
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -78,8 +85,6 @@ namespace Parcial1.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-
 
         public async Task<IActionResult> Detalle(int id)
         {
@@ -94,8 +99,6 @@ namespace Parcial1.Controllers
             return View(torneo);
         }
 
-
-        // POST: /Torneo/GenerarCuartos
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> GenerarCuartos(int id)
@@ -119,7 +122,6 @@ namespace Parcial1.Controllers
             return RedirectToAction("Detalle", new { id });
         }
 
-        // POST: /Torneo/GenerarSiguienteRonda
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> GenerarSiguienteRonda(int id, int rondaActual)
