@@ -1,0 +1,30 @@
+﻿@model Parcial1.Models.Torneo
+
+@{
+    ViewData["Title"] = "Crear torneo";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Crear torneo</h2>
+        <a href="/Torneo/Index" class="btn btn-secondary">Volver</a>
+    </div>
+
+    <form action="/Torneo/Crear" method="post">
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" name="Activo" value="true" />
+
+        <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input name="Nombre" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Edición</label>
+            <input name="Edicion" class="form-control" type="number" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Crear</button>
+    </form>
+</div>

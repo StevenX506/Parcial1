@@ -1,0 +1,28 @@
+﻿@model Parcial1.Models.Partido
+@using Parcial1.Models
+@{
+    ViewData["Title"] = "Definir penales";
+    var local = ViewBag.Local as Equipo;
+    var visitante = ViewBag.Visitante as Equipo;
+}
+
+<div class="container mt-4">
+    <h2>Empate — Definir ganador por penales</h2>
+    <p class="text-muted">Resultado: @Model.GolesLocal - @Model.GolesVisitante</p>
+
+    <form action="/Partido/Penales" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.Id" />
+        <input type="hidden" name="torneoId" value="@ViewBag.TorneoId" />
+
+        <div class="mb-3">
+            <label class="form-label">¿Quién ganó en penales?</label>
+            <select name="ganadorId" class="form-select">
+                <option value="@local?.Id">@local?.Nombre</option>
+                <option value="@visitante?.Id">@visitante?.Nombre</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar ganador</button>
+    </form>
+</div>

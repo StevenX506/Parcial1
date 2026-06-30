@@ -1,0 +1,46 @@
+﻿@model Parcial1.Models.Equipo
+
+@{
+    ViewData["Title"] = "Editar equipo";
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Editar equipo</h2>
+
+        <a asp-controller="Torneo"
+           asp-action="Detalle"
+           asp-route-id="@Model.TorneoId"
+           class="btn btn-secondary">
+            Volver
+        </a>
+    </div>
+
+    <form asp-controller="Equipo"
+          asp-action="Editar"
+          method="post">
+
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" name="Id" value="@Model.Id" />
+        <input type="hidden" name="TorneoId" value="@Model.TorneoId" />
+
+        <div class="mb-3">
+            <label asp-for="Nombre" class="form-label">Nombre del Equipo</label>
+            <input type="text" name="Nombre" value="@Model.Nombre" class="form-control" />
+            <span asp-validation-for="Nombre" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Ciudad" class="form-label">Ciudad</label>
+            <input type="text" name="Ciudad" value="@Model.Ciudad" class="form-control" />
+            <span asp-validation-for="Ciudad" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Guardar cambios
+        </button>
+
+    </form>
+</div>

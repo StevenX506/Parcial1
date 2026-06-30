@@ -1,0 +1,199 @@
+﻿@model Parcial1.Models.Torneo
+@using Parcial1.Models
+@{
+    ViewData["Title"] = "Detalle del torneo";
+    var equipos = ViewBag.Equipos as List<Equipo> ?? new List<Equipo>();
+    var partidos = ViewBag.Partidos as List<Partido> ?? new List<Partido>();
+    var equipoDict = equipos.ToDictionary(e => e.Id, e => e.Nombre);
+
+    var rondas = partidos.GroupBy(p => p.Ronda).OrderBy(g => g.Key).ToList();
+    var rondaActual = rondas.Any() ? rondas.Max(g => g.Key) : 0;
+    var todosJugados = rondas.Any() && rondas.Last().All(p => p.Jugado);
+    var hayGanador = todosJugados && rondaActual == 3; // Ronda 3 es la Final
+
+    string NombreRonda(int r) => r switch
+    {
+        1 => "Cuartos de Final",
+        2 => "Semifinales",
+        3 => "Final",
+        _ => $"Ronda {r}"
+    };
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>@Model.Nombre — Edición @Model.Edicion</h2>
+        <a href="/Torneo/Index" class="btn btn-secondary">Volver</a>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    @if (hayGanador)
+    {
+        var finalPartido = rondas.Last().First();
+        var ganadorId = finalPartido.GanadorId ?? (finalPartido.GolesLocal > finalPartido.GolesVisitante
+            ? finalPartido.EquipoLocalId
+            : finalPartido.EquipoVisitanteId);
+        var ganadorNombre = equipoDict.ContainsKey(ganadorId) ? equipoDict[ganadorId] : "Desconocido";
+
+        <div class="alert alert-success text-center fs-4">
+            🏆 ¡Campeón: <strong>@ganadorNombre</strong>!
+        </div>
+    }
+
+    @* SECCIÓN EQUIPOS *@
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h4>Equipos (@equipos.Count/8)</h4>
+        @if (equipos.Count < 8 && rondaActual == 0)
+        {
+            <a href="/Equipo/Crear?torneoId=@Model.Id" class="btn btn-sm btn-primary">+ Agregar equipo</a>
+        }
+    </div>
+
+    @if (!equipos.Any())
+    {
+        <p class="text-muted">No hay equipos inscritos.</p>
+    }
+    else
+    {
+        <table class="table table-bordered table-hover mb-4">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Ciudad</th>
+                    @if (rondaActual == 0)
+                    {
+                        <th>Acciones</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var equipo in equipos)
+                {
+                    <tr>
+                        <td>@equipo.Nombre</td>
+                        <td>@equipo.Ciudad</td>
+                        @if (rondaActual == 0)
+                        {
+                            <td>
+                                <a href="/Equipo/Editar/@equipo.Id" class="btn btn-sm btn-warning">Editar</a>
+                                <form action="/Equipo/Eliminar" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@equipo.Id" />
+                                    <input type="hidden" name="torneoId" value="@Model.Id" />
+                                    <button type="submit" class="btn btn-sm btn-danger"
+                                            onclick="return confirm('¿Eliminar este equipo?')">
+                                        Eliminar
+                                    </button>
+                                </form>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    @* BOTÓN GENERAR CUARTOS *@
+    @if (equipos.Count == 8 && rondaActual == 0)
+    {
+        <form action="/Torneo/GenerarCuartos" method="post" class="mb-4">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Id" />
+            <button type="submit" class="btn btn-warning w-100"
+                    onclick="return confirm('¿Generar los Cuartos de Final?')">
+                Generar Cuartos de Final
+            </button>
+        </form>
+    }
+
+    @* SECCIÓN PARTIDOS POR RONDA *@
+    @if (partidos.Any())
+    {
+        @foreach (var ronda in rondas)
+        {
+            <h4 class="mt-4">@NombreRonda(ronda.Key)</h4>
+            <table class="table table-bordered table-hover mb-3">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Local</th>
+                        <th>Visitante</th>
+                        <th>Marcador</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var partido in ronda)
+                    {
+                        var nombreLocal = equipoDict.ContainsKey(partido.EquipoLocalId)
+                            ? equipoDict[partido.EquipoLocalId] : partido.EquipoLocalId.ToString();
+                        var nombreVisitante = equipoDict.ContainsKey(partido.EquipoVisitanteId)
+                            ? equipoDict[partido.EquipoVisitanteId] : partido.EquipoVisitanteId.ToString();
+                        <tr>
+                            <td>@nombreLocal</td>
+                            <td>@nombreVisitante</td>
+                            <td>
+                                @if (partido.Jugado)
+                                {
+                                    <strong>@partido.GolesLocal - @partido.GolesVisitante</strong>
+                                    @if (partido.GolesLocal == partido.GolesVisitante && partido.GanadorId != null)
+                                    {
+                                        <small class="text-muted d-block">
+                                            (Penales: Ganó @(equipoDict.ContainsKey(partido.GanadorId.Value) ? equipoDict[partido.GanadorId.Value] : ""))
+                                        </small>
+                                    }
+                                }
+                                else
+                                {
+                                    <form action="/Partido/RegistrarResultado" method="post"
+                                          class="d-flex align-items-center gap-2">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@partido.Id" />
+                                        <input type="hidden" name="torneoId" value="@Model.Id" />
+                                        <input type="number" name="golesLocal" value="0"
+                                               min="0" max="99"
+                                               class="form-control form-control-sm"
+                                               style="width:60px" />
+                                        <span>-</span>
+                                        <input type="number" name="golesVisitante" value="0"
+                                               min="0" max="99"
+                                               class="form-control form-control-sm"
+                                               style="width:60px" />
+                                        <button type="submit" class="btn btn-sm btn-success">✓</button>
+                                    </form>
+                                }
+                            </td>
+                            <td>
+                                @if (partido.Jugado)
+                                {
+                                    <span class="badge bg-success">Jugado</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">Pendiente</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        @* BOTÓN DINÁMICO PARA GENERAR LA SIGUIENTE RONDA (SEMIFINALES O FINAL) *@
+        @if (todosJugados && !hayGanador)
+        {
+            <form action="/Torneo/GenerarSiguienteRonda" method="post" class="mt-4 mb-4">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                <input type="hidden" name="rondaActual" value="@rondaActual" />
+                <button type="submit" class="btn btn-primary w-100">
+                    Avanzar a @NombreRonda(rondaActual + 1)
+                </button>
+            </form>
+        }
+    }
+</div>

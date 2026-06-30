@@ -1,0 +1,31 @@
+﻿@model Parcial1.Models.Partido
+
+@{
+    ViewData["Title"] = "Registrar resultado";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Resultado</h2>
+        <a asp-controller="Torneo" asp-action="Detalle" asp-route-id="@Model.TorneoId"
+           class="btn btn-secondary">Volver</a>
+    </div>
+
+    <form asp-action="Resultado" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.Id" />
+        <input type="hidden" name="torneoId" value="@Model.TorneoId" />
+
+        <div class="mb-3">
+            <label class="form-label">Goles local</label>
+            <input type="number" name="golesLocal" class="form-control" min="0" max="99" value="0" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Goles visitante</label>
+            <input type="number" name="golesVisitante" class="form-control" min="0" max="99" value="0" />
+        </div>
+
+        <button type="submit" class="btn btn-success">Guardar resultado</button>
+    </form>
+</div>

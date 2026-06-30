@@ -16,21 +16,21 @@ builder.Services.Configure<Microsoft.AspNetCore.Mvc.JsonOptions>(options =>
 
 builder.Services.AddHttpClient<TorneoService>(client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration["Supabase:Url"]!);
+    client.BaseAddress = new Uri(builder.Configuration["Supabase:Url"]!.TrimEnd('/') + "/");
     client.DefaultRequestHeaders.Add("apikey", builder.Configuration["Supabase:ApiKey"]);
     client.DefaultRequestHeaders.Add("Authorization", $"Bearer {builder.Configuration["Supabase:ApiKey"]}");
 });
 
 builder.Services.AddHttpClient<EquipoService>(client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration["Supabase:Url"]!);
+    client.BaseAddress = new Uri(builder.Configuration["Supabase:Url"]!.TrimEnd('/') + "/");
     client.DefaultRequestHeaders.Add("apikey", builder.Configuration["Supabase:ApiKey"]);
     client.DefaultRequestHeaders.Add("Authorization", $"Bearer {builder.Configuration["Supabase:ApiKey"]}");
 });
 
 builder.Services.AddHttpClient<PartidoService>(client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration["Supabase:Url"]!);
+    client.BaseAddress = new Uri(builder.Configuration["Supabase:Url"]!.TrimEnd('/') + "/");
     client.DefaultRequestHeaders.Add("apikey", builder.Configuration["Supabase:ApiKey"]);
     client.DefaultRequestHeaders.Add("Authorization", $"Bearer {builder.Configuration["Supabase:ApiKey"]}");
 });
@@ -45,7 +45,10 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+// EL ORDEN DE ESTAS LÍNEAS ES CRÍTICO PARA LOS BOTONES Y FORMULARIOS:
 app.UseRouting();
+
 app.UseAuthorization();
 
 app.MapControllerRoute(

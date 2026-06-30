@@ -1,0 +1,29 @@
+﻿@model Parcial1.Models.Equipo
+
+@{
+    ViewData["Title"] = "Agregar equipo";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Agregar equipo</h2>
+        <a href="/Torneo/Detalle/@Model.TorneoId" class="btn btn-secondary">Volver</a>
+    </div>
+
+    <form action="/Equipo/Crear" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="TorneoId" value="@Model.TorneoId" />
+
+        <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input name="Nombre" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Ciudad</label>
+            <input name="Ciudad" class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Agregar</button>
+    </form>
+</div>
