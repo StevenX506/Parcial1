@@ -1,29 +1,55 @@
+using Parcial1.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.SnakeCaseLower;
+});
+
+builder.Services.Configure<Microsoft.AspNetCore.Mvc.JsonOptions>(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.SnakeCaseLower;
+});
+
+builder.Services.AddHttpClient<TorneoService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["Supabase:Url"]!);
+    client.DefaultRequestHeaders.Add("apikey", builder.Configuration["Supabase:ApiKey"]);
+    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {builder.Configuration["Supabase:ApiKey"]}");
+});
+
+builder.Services.AddHttpClient<EquipoService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["Supabase:Url"]!);
+    client.DefaultRequestHeaders.Add("apikey", builder.Configuration["Supabase:ApiKey"]);
+    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {builder.Configuration["Supabase:ApiKey"]}");
+});
+
+builder.Services.AddHttpClient<PartidoService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["Supabase:Url"]!);
+    client.DefaultRequestHeaders.Add("apikey", builder.Configuration["Supabase:ApiKey"]);
+    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {builder.Configuration["Supabase:ApiKey"]}");
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
-
 app.UseAuthorization();
-
-app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
-
+    pattern: "{controller=Torneo}/{action=Index}/{id?}");
 
 app.Run();
