@@ -1,125 +1,50 @@
-﻿<style>
-    body {
-        background: #f4f6f9;
-    }
+﻿@model List<Parcial1.Models.Torneo>
 
-    .page {
-        max-width: 1100px;
-        margin: 30px auto;
-    }
-
-    .header {
-        background: white;
-        padding: 18px 20px;
-        border-radius: 10px;
-        border: 1px solid #e5e7eb;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 18px;
-    }
-
-        .header h3 {
-            margin: 0;
-            font-size: 1.25rem;
-        }
-
-    .table-box {
-        background: white;
-        border-radius: 10px;
-        overflow: hidden;
-        border: 1px solid #e5e7eb;
-    }
-
-    table {
-        margin: 0;
-    }
-
-    thead {
-        background: #111827;
-        color: white;
-    }
-
-    tbody tr:hover {
-        background: #f3f4f6;
-    }
-
-    .actions {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-    }
-
-    .btn-sm {
-        border-radius: 6px;
-        padding: 5px 10px;
-        font-size: 0.85rem;
-    }
-
-    .btn-open {
-        background: #198754;
-        color: white;
-    }
-
-    .btn-edit {
-        background: #fbbf24;
-        color: #111827;
-    }
-
-    .btn-danger-soft {
-        background: #ef4444;
-        color: white;
-    }
-
-    .badge-soft {
-        padding: 5px 10px;
-        border-radius: 6px;
-        font-size: 0.75rem;
-    }
-</style>
+@{
+    ViewData["Title"] = "Torneos";
+}
 
 <div class="page">
 
     <div class="header">
         <div>
             <h3>Torneos</h3>
-            <small class="text-muted">Gestión general</small>
+            <small class="text-muted">Gestión de mini torneos</small>
         </div>
-
-        <a href="/Torneo/Crear" class="btn btn-primary">
-            + Nuevo torneo
-        </a>
+        <a href="/Torneo/Crear" class="btn btn-primary">+ Nuevo torneo</a>
     </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-light border text-danger mb-3">@TempData["Error"]</div>
+    }
 
     @if (Model == null || Model.Count == 0)
     {
-        <div class="alert alert-light border">
-            No hay torneos registrados.
-        </div>
+        <div class="alert alert-light border">No hay torneos registrados.</div>
     }
     else
     {
         <div class="table-box">
-
             <table class="table table-hover align-middle mb-0">
-
                 <thead>
                     <tr>
                         <th>Nombre</th>
+                        <th>Creado</th>
                         <th>Edición</th>
                         <th>Estado</th>
-                        <th style="width:260px;">Acciones</th>
+                        <th style="width:300px;">Acciones</th>
                     </tr>
                 </thead>
-
                 <tbody>
                     @foreach (var torneo in Model)
                     {
-                        <tr>
-                            <td><strong>@torneo.Nombre</strong></td>
-                            <td>@torneo.Edicion</td>
-                            <td>
-                                @if (torneo.Activo)
+                     <tr>
+                     <td><strong>@torneo.Nombre</strong></td>
+                     <td>@torneo.CreadoEn.ToString("dd/MM/yyyy")</td>
+                     <td>@torneo.Edicion</td>
+                     <td>
+                            @if (torneo.Activo)
                                 {
                                     <span class="badge bg-success">Activo</span>
                                 }
@@ -128,26 +53,18 @@
                                     <span class="badge bg-secondary">Finalizado</span>
                                 }
                             </td>
-
                             <td>
                                 <div class="actions">
-
-                                    <a href="/Torneo/Detalle/@torneo.Id"
-                                       class="btn btn-sm btn-open">
-                                        Abrir
-                                    </a>
-
-                                    <a href="/Torneo/Editar/@torneo.Id"
-                                       class="btn btn-sm btn-edit">
-                                        Editar
-                                    </a>
+                                    <a href="/Torneo/Detalle/@torneo.Id" class="btn btn-sm btn-open">Abrir</a>
+                                    <a href="/Torneo/Editar/@torneo.Id" class="btn btn-sm btn-edit">Editar</a>
 
                                     @if (torneo.Activo)
                                     {
                                         <form action="/Torneo/Desactivar" method="post">
                                             @Html.AntiForgeryToken()
                                             <input type="hidden" name="id" value="@torneo.Id" />
-                                            <button class="btn btn-sm btn-danger-soft">
+                                            <button class="btn btn-sm btn-danger-soft"
+                                                    onclick="return confirm('¿Finalizar este torneo?')">
                                                 Finalizar
                                             </button>
                                         </form>
@@ -157,22 +74,15 @@
                                         <form action="/Torneo/Activar" method="post">
                                             @Html.AntiForgeryToken()
                                             <input type="hidden" name="id" value="@torneo.Id" />
-                                            <button class="btn btn-sm btn-open">
-                                                Activar
-                                            </button>
+                                            <button class="btn btn-sm btn-open">Activar</button>
                                         </form>
                                     }
-
                                 </div>
                             </td>
-
                         </tr>
                     }
                 </tbody>
-
             </table>
-
         </div>
     }
-
 </div>

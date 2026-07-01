@@ -4,6 +4,7 @@ using Parcial1.Services;
 
 namespace Parcial1.Controllers
 {
+    // Controlador para gestionar los equipos inscritos.
     public class EquipoController : Controller
     {
         private readonly EquipoService _equipoService;
@@ -21,38 +22,13 @@ namespace Parcial1.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Editar(int id)
-        {
-            var equipo = await _equipoService.ObtenerPorIdAsync(id);
-
-            if (equipo == null)
-                return NotFound();
-
-            return View(equipo);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(Equipo equipo)
-        {
-            if (!ModelState.IsValid)
-                return View(equipo);
-
-            await _equipoService.ActualizarAsync(equipo);
-
-            return RedirectToAction("Detalle", "Torneo", new { id = equipo.TorneoId });
-        }
-
         public IActionResult Crear(int torneoId)
         {
-            var equipo = new Equipo
-            {
-                TorneoId = torneoId
-            };
-
+            var equipo = new Equipo { TorneoId = torneoId };
             return View(equipo);
         }
 
+        ///Equipo/Crear
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Crear(Equipo equipo)
@@ -61,10 +37,33 @@ namespace Parcial1.Controllers
                 return View(equipo);
 
             await _equipoService.CrearAsync(equipo);
-
             return RedirectToAction("Detalle", "Torneo", new { id = equipo.TorneoId });
         }
 
+        ///Equipo/Editar/5
+        [HttpGet]
+        public async Task<IActionResult> Editar(int id)
+        {
+            var equipo = await _equipoService.ObtenerPorIdAsync(id);
+            if (equipo == null)
+                return NotFound();
+
+            return View(equipo);
+        }
+
+        ///Equipo/Editar
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Editar(Equipo equipo)
+        {
+            if (!ModelState.IsValid)
+                return View(equipo);
+
+            await _equipoService.ActualizarAsync(equipo);
+            return RedirectToAction("Detalle", "Torneo", new { id = equipo.TorneoId });
+        }
+
+        ///Equipo/Eliminar
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Eliminar(int id, int torneoId)

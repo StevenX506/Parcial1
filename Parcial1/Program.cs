@@ -46,7 +46,6 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-// EL ORDEN DE ESTAS LÍNEAS ES CRÍTICO PARA LOS BOTONES Y FORMULARIOS:
 app.UseRouting();
 
 app.UseAuthorization();

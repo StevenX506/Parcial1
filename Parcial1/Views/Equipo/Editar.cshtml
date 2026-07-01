@@ -4,96 +4,31 @@
     ViewData["Title"] = "Editar equipo";
 }
 
-<style>
-    body {
-        background: #f4f6f9;
-    }
+<div class="page">
+    <div class="card-box">
 
-    .edit-wrap {
-        max-width: 750px;
-        margin: 30px auto;
-    }
-
-    .edit-card {
-        background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    }
-
-    .edit-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 18px;
-    }
-
-        .edit-header h2 {
-            margin: 0;
-            font-size: 22px;
-        }
-
-    .form-control {
-        border-radius: 8px;
-    }
-
-    .btn-primary,
-    .btn-secondary {
-        border-radius: 8px;
-    }
-</style>
-
-<div class="edit-wrap">
-
-    <div class="edit-card">
-
-        <div class="edit-header">
-
-            <h2>Editar equipo</h2>
-
-            <a asp-controller="Torneo"
-               asp-action="Detalle"
-               asp-route-id="@Model.TorneoId"
-               class="btn btn-secondary btn-sm">
-                Volver
-            </a>
-
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3>Editar equipo</h3>
+            <a href="/Torneo/Detalle/@Model.TorneoId" class="btn btn-secondary btn-sm">Volver</a>
         </div>
 
-        <form asp-controller="Equipo"
-              asp-action="Editar"
-              method="post">
-
+        <form action="/Equipo/Editar" method="post">
             @Html.AntiForgeryToken()
-
             <input type="hidden" name="Id" value="@Model.Id" />
             <input type="hidden" name="TorneoId" value="@Model.TorneoId" />
 
             <div class="mb-3">
-                <label asp-for="Nombre" class="form-label">Nombre del Equipo</label>
-                <input type="text"
-                       name="Nombre"
-                       value="@Model.Nombre"
-                       class="form-control" />
-                <span asp-validation-for="Nombre" class="text-danger"></span>
+                <label class="form-label">Nombre del equipo</label>
+                <input type="text" name="Nombre" value="@Model.Nombre" class="form-control" />
             </div>
 
             <div class="mb-3">
-                <label asp-for="Ciudad" class="form-label">Ciudad</label>
-                <input type="text"
-                       name="Ciudad"
-                       value="@Model.Ciudad"
-                       class="form-control" />
-                <span asp-validation-for="Ciudad" class="text-danger"></span>
+                <label class="form-label">Ciudad</label>
+                <input type="text" name="Ciudad" value="@Model.Ciudad" class="form-control" />
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">
-                Guardar cambios
-            </button>
-
+            <button type="submit" class="btn btn-primary w-100">Guardar cambios</button>
         </form>
 
     </div>
-
 </div>

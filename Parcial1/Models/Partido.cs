@@ -24,11 +24,11 @@ namespace Parcial1.Models
         public DateTime FechaPartido { get; set; } = DateTime.Today;
 
         [JsonPropertyName("goles_local")]
-        [Range(0, 99, ErrorMessage = "Los goles deben estar entre 0 y 99.")]
+        [Range(0, 99, ErrorMessage = "Los goles deben ser entre 0 y 99.")]
         public int GolesLocal { get; set; }
 
         [JsonPropertyName("goles_visitante")]
-        [Range(0, 99, ErrorMessage = "Los goles deben estar entre 0 y 99.")]
+        [Range(0, 99, ErrorMessage = "Los goles deben ser entre 0 y 99.")]
         public int GolesVisitante { get; set; }
 
         [JsonPropertyName("jugado")]

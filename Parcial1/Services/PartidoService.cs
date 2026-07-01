@@ -1,10 +1,9 @@
-using System.Net.Http.Json;
 using System.Text.Json;
-using Microsoft.Extensions.Configuration;
 using Parcial1.Models;
 
 namespace Parcial1.Services
 {
+    //Servicio para gestionar operaciones en la tabla de partidos.
     public class PartidoService
     {
         private readonly HttpClient _http;
@@ -18,11 +17,11 @@ namespace Parcial1.Services
         public PartidoService(HttpClient http, IConfiguration config)
         {
             _http = http;
-            // Construimos la URL absoluta directa y recuperamos la ApiKey aquí
             _baseUrl = config["Supabase:Url"]!.TrimEnd('/') + "/rest/v1/partidos";
             _apiKey = config["Supabase:ApiKey"]!;
         }
 
+        //Crea un HttpRequestMessage con las cabeceras de autenticación de Supabase.
         private HttpRequestMessage CrearMensajeConCabeceras(HttpMethod metodo, string url)
         {
             var request = new HttpRequestMessage(metodo, url);
@@ -31,6 +30,7 @@ namespace Parcial1.Services
             return request;
         }
 
+        //Obtiene todos los partidos de un torneo.
         public async Task<List<Partido>> ObtenerPorTorneoAsync(int torneoId)
         {
             var url = $"{_baseUrl}?select=*&torneo_id=eq.{torneoId}";
@@ -43,6 +43,7 @@ namespace Parcial1.Services
             return JsonSerializer.Deserialize<List<Partido>>(json, _jsonOptions) ?? new List<Partido>();
         }
 
+        //Obtiene los partidos de una ronda.
         public async Task<List<Partido>> ObtenerPorRondaAsync(int torneoId, int ronda)
         {
             var url = $"{_baseUrl}?select=*&torneo_id=eq.{torneoId}&ronda=eq.{ronda}";
@@ -55,6 +56,7 @@ namespace Parcial1.Services
             return JsonSerializer.Deserialize<List<Partido>>(json, _jsonOptions) ?? new List<Partido>();
         }
 
+        //Obtiene un partido por su ID.
         public async Task<Partido?> ObtenerPorIdAsync(int id)
         {
             var url = $"{_baseUrl}?id=eq.{id}&select=*";
@@ -68,6 +70,7 @@ namespace Parcial1.Services
             return lista?.FirstOrDefault();
         }
 
+        //Crea un nuevo partido en Supabase.
         public async Task CrearAsync(Partido partido)
         {
             var request = CrearMensajeConCabeceras(HttpMethod.Post, _baseUrl);
@@ -86,6 +89,7 @@ namespace Parcial1.Services
             await _http.SendAsync(request);
         }
 
+        //Genera los 4 partidos de manera aleatoria.
         public async Task GenerarCuartosAsync(int torneoId, List<Equipo> equipos)
         {
             var random = new Random();
@@ -104,6 +108,7 @@ namespace Parcial1.Services
             }
         }
 
+        //Genera los partidos de la siguiente ronda con los ganadores de la anterior.
         public async Task GenerarSiguienteRondaAsync(int torneoId, int rondaActual)
         {
             var partidos = await ObtenerPorRondaAsync(torneoId, rondaActual);
@@ -131,6 +136,7 @@ namespace Parcial1.Services
             }
         }
 
+        //Registra el resultado de un partido.
         public async Task<string> RegistrarResultadoAsync(int id, int golesLocal, int golesVisitante)
         {
             var partido = await ObtenerPorIdAsync(id);
@@ -162,6 +168,7 @@ namespace Parcial1.Services
             return "ok";
         }
 
+        //Define el ganador de un partido empatado por penales.
         public async Task<bool> DefinirGanadorPenalesAsync(int id, int ganadorId)
         {
             var partido = await ObtenerPorIdAsync(id);
@@ -179,6 +186,7 @@ namespace Parcial1.Services
             return true;
         }
 
+        //Elimina un partidosi no se ha jugado.
         public async Task<bool> EliminarAsync(int id)
         {
             var partido = await ObtenerPorIdAsync(id);

@@ -20,108 +20,6 @@
     };
 }
 
-<style>
-    body {
-        background: #f4f6f9;
-    }
-
-    .page {
-        max-width: 1100px;
-        margin: 30px auto;
-    }
-
-    .header {
-        background: white;
-        padding: 18px 20px;
-        border-radius: 10px;
-        border: 1px solid #e5e7eb;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 18px;
-    }
-
-        .header h3 {
-            margin: 0;
-            font-size: 1.25rem;
-        }
-
-    .section-title {
-        background: white;
-        padding: 14px 18px;
-        border-radius: 10px 10px 0 0;
-        border: 1px solid #e5e7eb;
-        border-bottom: none;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 18px;
-    }
-
-        .section-title h4 {
-            margin: 0;
-            font-size: 1.05rem;
-        }
-
-    .table-box {
-        background: white;
-        border-radius: 0 0 10px 10px;
-        overflow: hidden;
-        border: 1px solid #e5e7eb;
-        margin-bottom: 18px;
-    }
-
-        .table-box.no-header {
-            border-radius: 10px;
-            margin-top: 18px;
-        }
-
-    table {
-        margin: 0;
-    }
-
-    thead {
-        background: #111827;
-        color: white;
-    }
-
-    tbody tr:hover {
-        background: #f3f4f6;
-    }
-
-    .btn-sm {
-        border-radius: 6px;
-        padding: 5px 10px;
-        font-size: 0.85rem;
-    }
-
-    .btn-open {
-        background: #198754;
-        color: white;
-    }
-
-    .btn-edit {
-        background: #fbbf24;
-        color: #111827;
-    }
-
-    .btn-danger-soft {
-        background: #ef4444;
-        color: white;
-    }
-
-    .champion-banner {
-        background: linear-gradient(135deg, #fbbf24, #f59e0b);
-        color: #111827;
-        border-radius: 10px;
-        padding: 20px;
-        text-align: center;
-        font-size: 1.3rem;
-        font-weight: 600;
-        margin-bottom: 18px;
-        border: 1px solid #e5e7eb;
-    }
-</style>
 
 <div class="page">
 
@@ -147,11 +45,10 @@
         var ganadorNombre = equipoDict.ContainsKey(ganadorId) ? equipoDict[ganadorId] : "Desconocido";
 
         <div class="champion-banner">
-            🏆 ¡Campeón: @ganadorNombre!
+            Ganador: @ganadorNombre
         </div>
     }
 
-    @* SECCIÓN EQUIPOS *@
     <div class="section-title">
         <h4>Equipos (@equipos.Count/8)</h4>
         @if (equipos.Count < 8 && rondaActual == 0)
@@ -210,7 +107,6 @@
         </div>
     }
 
-    @* BOTÓN GENERAR CUARTOS *@
     @if (equipos.Count == 8 && rondaActual == 0)
     {
         <form action="/Torneo/GenerarCuartos" method="post" class="mb-4">
@@ -223,7 +119,6 @@
         </form>
     }
 
-    @* SECCIÓN PARTIDOS POR RONDA *@
     @if (partidos.Any())
     {
         @foreach (var ronda in rondas)

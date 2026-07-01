@@ -1,49 +1,80 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Proyecto</title>
-    <script type="importmap"></script>
+    <title>@ViewData["Title"] - Torneos</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Proyecto.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/site.css" />
+    <style>
+            body {
+                background: #f4f6f9;
+            }
+
+            .navbar {
+                background: #111827 !important;
+                border-bottom: none !important;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+            }
+
+            .navbar-brand {
+                color: white !important;
+                font-weight: 700;
+                font-size: 1.1rem;
+                letter-spacing: 0.5px;
+            }
+
+            .nav-link {
+                color: #9ca3af !important;
+                font-size: 0.9rem;
+            }
+
+                .nav-link:hover {
+                    color: white !important;
+                }
+
+            .footer {
+                background: white;
+                border-top: 1px solid #e5e7eb !important;
+                padding: 14px 0;
+                font-size: 0.85rem;
+                color: #6b7280;
+                margin-top: 40px;
+            }
+
+            main {
+                padding-top: 10px;
+            }
+    </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Proyecto</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+        <nav class="navbar navbar-expand-sm">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand" href="/Torneo/Index">⚽ Gestión de Torneos</a>
+                <div class="navbar-collapse collapse">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <i class="bi bi-arrow-through-heart-fill"></i>
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Steven</a>
+                            <a class="nav-link" href="/Torneo/Index">Torneos</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+
+    <div class="container-fluid px-4">
+        <main role="main" class="pb-4">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - Proyecto - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="footer">
+        <div class="container px-4">
+            &copy; 2026 — Primer Parcial Programación V
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

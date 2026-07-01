@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using Parcial1.Models;
 using Parcial1.Services;
 
 namespace Parcial1.Controllers
 {
+    /// Controlador para gestionar los partidos.
     public class PartidoController : Controller
     {
         private readonly PartidoService _partidoService;
@@ -15,6 +15,7 @@ namespace Parcial1.Controllers
             _equipoService = equipoService;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Resultado(int id)
         {
             var partido = await _partidoService.ObtenerPorIdAsync(id);
@@ -23,13 +24,14 @@ namespace Parcial1.Controllers
 
             if (partido.Jugado)
             {
-                TempData["Error"] = "Este partido ya fue jugado y no puede editarse.";
+                TempData["Error"] = "Este partido ya fue jugado y no se puede editar.";
                 return RedirectToAction("Detalle", "Torneo", new { id = partido.TorneoId });
             }
 
             return View(partido);
         }
 
+        ///Partido/RegistrarResultado
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RegistrarResultado(int id, int golesLocal, int golesVisitante, int torneoId)
@@ -40,11 +42,28 @@ namespace Parcial1.Controllers
                 return RedirectToAction("Penales", new { id, torneoId });
 
             if (resultado == "error")
-                TempData["Error"] = "No se pudo registrar el resultado. El partido ya fue jugado.";
+                TempData["Error"] = "El partido ya fue jugado. ";
 
             return RedirectToAction("Detalle", "Torneo", new { id = torneoId });
         }
 
+        ///Partido/Penales/5
+        [HttpGet]
+        public async Task<IActionResult> Penales(int id, int torneoId)
+        {
+            var partido = await _partidoService.ObtenerPorIdAsync(id);
+            if (partido == null)
+                return NotFound();
+
+            var equipos = await _equipoService.ObtenerPorTorneoAsync(torneoId);
+            ViewBag.Local = equipos.FirstOrDefault(e => e.Id == partido.EquipoLocalId);
+            ViewBag.Visitante = equipos.FirstOrDefault(e => e.Id == partido.EquipoVisitanteId);
+            ViewBag.TorneoId = torneoId;
+
+            return View(partido);
+        }
+
+        ///Partido/Penales
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Penales(int id, int ganadorId, int torneoId)
@@ -53,24 +72,7 @@ namespace Parcial1.Controllers
             return RedirectToAction("Detalle", "Torneo", new { id = torneoId });
         }
 
-        public async Task<IActionResult> Penales(int id, int torneoId)
-        {
-            var partido = await _partidoService.ObtenerPorIdAsync(id);
-            if (partido == null)
-                return NotFound();
-
-            var equipos = await _equipoService.ObtenerPorTorneoAsync(torneoId);
-            var local = equipos.FirstOrDefault(e => e.Id == partido.EquipoLocalId);
-            var visitante = equipos.FirstOrDefault(e => e.Id == partido.EquipoVisitanteId);
-
-            ViewBag.Local = local;
-            ViewBag.Visitante = visitante;
-            ViewBag.TorneoId = torneoId;
-
-            return View(partido);
-        }
-
-        
+        ///Partido/Eliminar
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Eliminar(int id, int torneoId)
@@ -78,7 +80,7 @@ namespace Parcial1.Controllers
             var eliminado = await _partidoService.EliminarAsync(id);
 
             if (!eliminado)
-                TempData["Error"] = "No se puede eliminar un partido que ya fue jugado.";
+                TempData["Error"] = "No se puede eliminar un partido terminado.";
 
             return RedirectToAction("Detalle", "Torneo", new { id = torneoId });
         }
